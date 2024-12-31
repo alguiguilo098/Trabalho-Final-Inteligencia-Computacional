@@ -32,7 +32,10 @@ Este guia explica como instalar o Python, criar um ambiente virtual e instalar d
 ## 2. Criar um Ambiente Virtual
 
 Um ambiente virtual é usado para isolar dependências de projetos Python.
-
+0. clone o repositório:
+```bash
+   git clone https://github.com/alguiguilo098/Trabalho-Final-Inteligencia-Computacional.git
+```
 1. No terminal, navegue até a pasta do seu projeto:
    ```bash
    cd /caminho/para/seu/projeto
