@@ -5,33 +5,10 @@ from joblib import Parallel, delayed
 import numpy as np
 import skimage
 from .glcm import glcm
-from .lbp import lbp
+
 from .lpq import lpq
 
-def lbpimageaplly(imgpath,P: int = 8,R: int = 2,method: Literal['default', 'ror', 'uniform', 'nri_uniform', 'var'] = 'nri_uniform'):
-    """
-    Applies the LBP (Local Binary Patterns) method to an image.
 
-    Parameters:
-        imgpath (str): Path to the image file.
-        P (int, optional): Number of circularly symmetric neighbor points. Default is 8.
-        R (int, optional): Radius of the circle. Default is 2.
-        method (Literal, optional): Method to extract LBP. Options include:
-            - 'default': Basic LBP.
-            - 'ror': Rotation invariant.
-            - 'uniform': Uniform patterns only.
-            - 'nri_uniform': Non-rotation-invariant uniform patterns.
-            - 'var': Variance-based patterns. Default is 'nri_uniform'.
-
-    Returns:
-        np.ndarray: The resulting LBP image or feature vector.
-    """
-    
-    imgopen=skimage.io.imread(imgpath,as_gray=True) # open image in as gray 
-    
-    img_info=lbp(image=imgopen,P=P,R=R,method=method) # aplly glcm in image open
-          
-    return img_info
 
 def lpqimageapply(imgpath, winSize: int = 7,decorr: int = 1,mode: str = 'nh'):
     """
@@ -115,20 +92,11 @@ def readfilendarray(filename:str,delimiter="|",data="f")->np.ndarray:
             lines.pop()
             return np.array(lines)
 
-
-
 def extractimagesdescriptor(file: str, filename: str,pathimg:str, descriptor: Literal["LPQ", "LBP", "GLCM"] = 'GLCM', jobs_n: int = -1,):
     
     pathimageitetor = glob.glob(pathimg)
     writeresult(pathimageitetor, file,pathimg)
-
-    if descriptor == "LPQ":
-        def lpq_function(method: Literal['default', 'ror', 'uniform', 'nri_uniform', 'var'] = 'nri_uniform', P: int = 8, R: int = 2): 
-            datasetlpq = Parallel(n_jobs=jobs_n)(delayed(lbpimageaplly)(i, P, R, method) for i in pathimageitetor)
-            writendarry(filename=filename, array=datasetlpq)
-        print("FUNCTION LPQ")
-        return lpq_function
-    elif descriptor == "LBP":
+    if descriptor == "LBP":
         def lbp_function(winSize: int = 7, decorr: int = 1, mode: str = 'nh'):
             datasetlbq = Parallel(n_jobs=jobs_n)(delayed(lpqimageapply)(i, winSize, decorr, mode) for i in pathimageitetor)
             writendarry(filename=filename, array=datasetlbq)
@@ -146,6 +114,9 @@ def writeresult(pathimageitetor, file,pathimg:str):
     for i in pathimageitetor:
         y_result.append(re.sub(r'\d', '', i.replace(pathimg.split(".")[0], "").replace(".bmp", "").split("/")[-1]))
     writendarry(file, np.array(y_result))  
+
+
+
 
 if __name__=="__main__":
     function_glcm=extractimagesdescriptor(file="../DadosExtraidos/Y_Resultado.txt",filename="../DadosExtraidos/X_TreinoGLCM.txt",descriptor="GLCM",pathimg="../BaseDeDados/*.bmp")
